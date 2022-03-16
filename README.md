@@ -1,5 +1,6 @@
-# Imputing Out-of-Vocabulary Embedding with LOVE Makes Language Models Robust with Little Cost
-This is a Pytorch implementation of our paper 
+# Imputing Out-of-Vocabulary Embeddings with LOVE Makes Language Models Robust with Little Cost
+LOVE is accpeted by ACL22 main conference as a [long paper](https://arxiv.org/abs/2203.07860). 
+This is a Pytorch implementation of our paper. 
 
 ## Environment setup
 Clone the repository and set up the environment via "requirements.txt". Here we use python3.6. 
