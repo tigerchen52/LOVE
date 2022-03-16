@@ -13,15 +13,17 @@ register = partial(register, registry=registry)
 
 @register('rnn')
 class RNN(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
-        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
+        self.dim = args.emb_dim
+        self.encoder_layer = args.encoder_layer
+        self.embedding = nn.Embedding(args.vocab_size, self.dim, padding_idx=0)
         self.embedding.weight.requires_grad = True
-        self.rnn = nn.LSTM(input_size=300, hidden_size=int(300 // 2), batch_first=True, num_layers=2, bidirectional=True)
-        self.linear1 = nn.Linear(300, 300)
-        self.linear2 = nn.Linear(300, 300)
+        self.rnn = nn.LSTM(input_size=self.dim, hidden_size=int(self.dim // 2), batch_first=True, num_layers=self.encoder_layer, bidirectional=True)
+        self.linear1 = nn.Linear(self.dim, self.dim)
+        self.linear2 = nn.Linear(self.dim, self.dim)
         self.activiation = nn.Tanh()
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=args.drop_rate)
 
     def forward(self, x, mask=None):
         x_embed = self.embedding(x)
@@ -35,12 +37,11 @@ class RNN(nn.Module):
         encoder_outputs_packed, (h_last, c_last) = self.rnn(packed)
         rnn_output, _ = pad_packed_sequence(encoder_outputs_packed, batch_first=True)
 
-        #rnn_output2, h_n = self.rnn(x_embed)
         output = list()
         for index in range(len(mask)):
             temp = rnn_output[index, mask[index]-1, :]
             output.append(temp)
-        output = torch.reshape(torch.cat(output, dim=0), (shape[0], 300))
+        output = torch.reshape(torch.cat(output, dim=0), (shape[0], self.dim))
 
         output = self.dropout(output)
         output = self.linear1(output)
@@ -52,18 +53,17 @@ class RNN(nn.Module):
 
 @register('cnn')
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
-        filter_num = 300
-        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
+        self.dim = args.emb_dim
+        self.embedding = nn.Embedding(args.vocab_size, self.dim, padding_idx=0)
         self.embedding.weight.data.uniform_(-1, 1)
         self.windows = [3, 4, 5]
-        self.dropout = 0.1
         self.convs = list()
         for window in self.windows:
-            self.convs.append(nn.Conv2d(1, filter_num, (window, 300)).cuda())
-        self.dropout = torch.nn.Dropout(p=self.dropout)
-        self.proj = nn.Linear(len(self.windows)*filter_num, 300)
+            self.convs.append(nn.Conv2d(1, self.dim, (window, self.dim)).cuda())
+        self.dropout = torch.nn.Dropout(p=args.drop_rate)
+        self.proj = nn.Linear(len(self.windows)*self.dim, self.dim)
 
     def forward(self, x, x_lens):
         embeddings = self.embedding(x)
@@ -82,12 +82,13 @@ class CNN(nn.Module):
 
 @register('attention')
 class Attention(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super(Attention, self).__init__()
-        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
+        self.dim = args.emb_dim
+        self.embedding = nn.Embedding(args.vocab_size, self.dim, padding_idx=0)
         self.embedding.weight.requires_grad = True
-        self.encoders = nn.ModuleList([OriAttention() for _ in range(1)])
-        self.sublayer = SublayerConnection(0.1, 300)
+        self.encoders = nn.ModuleList([OriAttention(args) for _ in range(1)])
+        self.sublayer = SublayerConnection(args.drop_rate, self.dim)
 
     def forward(self, x, mask):
         x = self.embedding(x)
@@ -97,10 +98,10 @@ class Attention(nn.Module):
 
 
 class OriAttention(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
         self.head = 1
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=args.drop_rate)
 
     def forward(self, x, mask):
         q = x
@@ -128,65 +129,61 @@ def l2norm(x):
 
 @register('pam')
 class Pamela(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super(Pamela, self).__init__()
-        self.embedding = nn.Embedding(21257, 300, padding_idx=0)
+        self.dim = args.emb_dim
+        self.encoder_layer = args.encoder_layer
+        self.embedding = nn.Embedding(args.vocab_size, self.dim, padding_idx=0)
         self.embedding.weight.requires_grad = True
-        self.encoders = nn.ModuleList([Pamelaformer() for _ in range(1)])
-        self.sublayer = SublayerConnection(0.1, 300)
-        #self.pos_attns = cal_fixed_pos_att(200, window_size=3)
-        self.head = 1
+        self.head = args.att_head_num
+        self.encoders = nn.ModuleList([Pamelaformer(args) for _ in range(self.encoder_layer)])
+        self.sublayer = SublayerConnection(args.drop_rate, self.dim)
 
     def forward(self, x, mask):
         x = self.embedding(x)
-
         shape = list(x.size())
         position = PositionalEncoding(shape[-1], shape[-2])
         pos_att = position(x)
-        # shape = list(x.size())
-        # position = PositionalAttCached(shape[-1], self.pos_attns, shape[-2])
-        # pos_att = position(x)
 
         for i, encoder in enumerate(self.encoders):
             x = self.sublayer(x, lambda x: encoder(x, mask, pos_att))
 
-        #x = x.masked_fill_(~mask, -float('inf')).max(dim=1)[0]
         x = x.masked_fill_(~mask, 0).sum(dim=1)
         return l2norm(x)
 
 
 class Pamelaformer(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
-        self.self_attention = SAM()
-        self.pos_attention = PAM()
-        dim = 300
+        self.self_attention = SAM(args)
+        self.pos_attention = PAM(args)
+        dim = args.emb_dim
         self.projection = nn.Sequential(
             nn.Linear(dim, dim),
             nn.ReLU()
         )
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=args.drop_rate)
 
-    def forward(self, x, mask, position):
-        #a = self.self_attention(x, mask)
+    def forward(self, x, mask, position, merge=False):
+        att = self.self_attention(x, mask)
         pos = self.pos_attention(x, mask, position)
-        #self_att = self.self_attention(pos, mask)
-        #c = self.projection(torch.cat([a, b], dim=-1))
-        c = self.projection(pos)
+        if merge:
+            c = self.projection(torch.cat([att, pos], dim=-1))
+        else:
+            c = self.projection(pos)
         return c
 
 
 class PAM(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
-        dim = 300
-        self.head = 1
+        dim = args.emb_dim
+        self.head = args.att_head_num
         self.projection = nn.Sequential(
             nn.Linear(dim, dim),
             nn.ReLU()
         )
-
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=args.drop_rate)
 
     def forward(self, x, mask, pos):
         q = pos
@@ -208,41 +205,21 @@ class PAM(nn.Module):
         return v_
 
 
-class PAM2(nn.Module):
-    def __init__(self):
-        super().__init__()
-        dim = 300
-        self.head = 1
-        self.projection = nn.Sequential(
-            nn.Linear(dim, dim),
-            nn.ReLU()
-        )
-
-        self.dropout = nn.Dropout(p=0.1)
-
-    def forward(self, x, mask, pos):
-        v = x
-        pos.masked_fill_(~mask, 0.)
-        v_ = torch.matmul(pos.transpose(1, 2), v)
-        v_ = self.projection(v_)
-        return v_
-
-
 class SAM(nn.Module):
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
-        dim = 32
-        self.head = 1
-        hidden_size = 300
+        attention_dim = 32
+        self.head = args.att_head_num
+        hidden_size = args.emb_dim
         self.projectionq = nn.Sequential(
-            nn.Linear(hidden_size, dim),
+            nn.Linear(hidden_size, attention_dim),
             nn.ReLU()
         )
         self.projectionk = nn.Sequential(
-            nn.Linear(hidden_size, dim),
+            nn.Linear(hidden_size, attention_dim),
             nn.ReLU()
         )
-        self.dropout = nn.Dropout(p=0.1)
+        self.dropout = nn.Dropout(p=args.drop_rate)
 
     def forward(self, x, mask):
         q = self.projectionq(x)
@@ -341,7 +318,6 @@ class PositionalAttCached(nn.Module):
         p_e = Variable(pos_attn, requires_grad=False).cuda()
         p_e = p_e.repeat([shape[0], 1, 1])
         return p_e
-
 
 class PositionalEncoding(nn.Module):
 
