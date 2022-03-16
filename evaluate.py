@@ -2,16 +2,16 @@ import torch
 import numpy as np
 from scipy import stats
 import math
+import tokenization
 from model import registry as Producer
 from torch.utils.data import DataLoader
 from utils import load_predict_dataset, TextData, collate_fn_predict
-Batch_size = 32
 
 
-def produce(model_path, model_type, vocab_path='data/word_sim/all_vocab.txt'):
+def produce(model_path, model_type, tokenizer, batch_size=32, vocab_path='data/word_sim/all_vocab.txt'):
     dataset = load_predict_dataset(path=vocab_path)
     dataset = TextData(dataset)
-    train_iterator = DataLoader(dataset=dataset, batch_size=Batch_size, shuffle=False, collate_fn=collate_fn_predict)
+    train_iterator = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=lambda x: collate_fn_predict(x, tokenizer))
     model = Producer[model_type]()
     model.load_state_dict(torch.load(model_path))
     model.eval()
@@ -95,7 +95,7 @@ def uniform_loss(x, t=2):
     return torch.pdist(x, p=2).pow(2).mul(-t).exp().mean().log()
 
 
-def overall(model_path, model_type='pam'):
+def overall(model_path, tokenizer, model_type='pam'):
     data_list = [
         {
             'task':'RareWord',
@@ -149,7 +149,7 @@ def overall(model_path, model_type='pam'):
     ]
 
     all_score = list()
-    embeddings = produce(model_path=model_path, model_type=model_type)
+    embeddings = produce(model_path=model_path, model_type=model_type, tokenizer=tokenizer)
     for data in data_list:
         score, drop_rate = cal_spear(data_file=data['file'], vectors=embeddings, index1=data['index1'],
                                      index2=data['index2'], target=data['target'], spear=data['spear'])
@@ -164,4 +164,6 @@ def overall(model_path, model_type='pam'):
 if __name__ == '__main__':
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    overall(model_path='output/model_in_paper.pt')
+    TOKENIZER = tokenization.FullTokenizer(vocab_file='data/vocab.txt', do_lower_case=True)
+    vocab_size = len(TOKENIZER.vocab)
+    overall(model_path='output/model_in_paper.pt', tokenizer=TOKENIZER)

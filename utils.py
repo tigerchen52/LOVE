@@ -3,26 +3,32 @@ import torch
 import collections
 from torch.utils.data import Dataset
 
-VOCAB = 'data/vocab.txt'
-TOKENIZER = tokenization.FullTokenizer(vocab_file=VOCAB, do_lower_case=True)
-DIM = 300
+# VOCAB = 'data/vocab.txt'
+# TOKENIZER = tokenization.FullTokenizer(vocab_file=VOCAB, do_lower_case=True)
 
 
-def load_dataset(path):
+def load_dataset(path, DIM=300, lower=True):
     origin_words, origin_repre = list(), list()
     all_embs = dict()
     cnt = 0
     for line in open(path, encoding='utf8'):
         cnt += 1
-        if cnt == 1:continue
         row = line.strip().split(' ')
         if len(row) != DIM + 1:continue
-        word = str.lower(row[0])
+        word = row[0]
+        if lower:
+            word = str.lower(word)
         if filter(word): continue
         emb = [float(e) for e in row[1:]]
         origin_repre.append(emb)
         origin_words.append(word)
         all_embs[word] = emb
+
+    # add <unk> token
+    emb = [0.0 for _ in range(DIM)]
+    origin_repre.append(emb)
+    origin_words.append('<unk>')
+    all_embs['<unk>'] = emb
 
     print('loaded! Word num = {a}'.format(a=len(origin_words)))
     return {'origin_word': origin_words, 'origin_repre':origin_repre}, all_embs
@@ -51,7 +57,7 @@ class TextData(Dataset):
         return self.origin_word[idx], self.origin_repre[idx]
 
 
-def collate_fn(batch_data, pad=0):
+def collate_fn(batch_data, TOKENIZER, pad=0):
     batch_words, batch_oririn_repre = list(zip(*batch_data))
 
     aug_words, aug_repre, aug_ids = list(), list(), list()
@@ -74,7 +80,7 @@ def collate_fn(batch_data, pad=0):
     return batch_words, batch_oririn_repre, batch_aug_repre_ids, x_lens
 
 
-def collate_fn_predict(batch_data, pad=0):
+def collate_fn_predict(batch_data, TOKENIZER, pad=0):
     batch_words, batch_oririn_repre = list(zip(*batch_data))
 
     batch_repre_ids = list()

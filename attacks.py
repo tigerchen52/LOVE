@@ -55,7 +55,7 @@ def ocr_aug(word, max_char=1):
     return aug.augment(word)
 
 
-def get_random_attack(word, probs=[2.0, 2.0, 2.0, 2.0, 10.0, 10.0]):
+def get_random_attack(word, probs=[0.07, 0.07, 0.07, 0.07, 0.36, 0.36]):
     attack_type = ['swap', 'delete', 'insert', 'keyboard', 'synonym', 'unchange']
     attack_probs = np.array(probs)
     attack_probs = attack_probs / sum(attack_probs)

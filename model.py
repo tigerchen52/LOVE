@@ -13,13 +13,13 @@ register = partial(register, registry=registry)
 
 @register('rnn')
 class RNN(nn.Module):
-    def __init__(self, vocab_size=21257, dim=300):
+    def __init__(self):
         super().__init__()
-        self.embedding = nn.Embedding(vocab_size, dim, padding_idx=0)
+        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
         self.embedding.weight.requires_grad = True
-        self.rnn = nn.LSTM(input_size=dim, hidden_size=int(dim // 2), batch_first=True, num_layers=2, bidirectional=True)
-        self.linear1 = nn.Linear(dim, dim)
-        self.linear2 = nn.Linear(dim, dim)
+        self.rnn = nn.LSTM(input_size=300, hidden_size=int(300 // 2), batch_first=True, num_layers=2, bidirectional=True)
+        self.linear1 = nn.Linear(300, 300)
+        self.linear2 = nn.Linear(300, 300)
         self.activiation = nn.Tanh()
         self.dropout = nn.Dropout(p=0.1)
 
@@ -52,17 +52,18 @@ class RNN(nn.Module):
 
 @register('cnn')
 class CNN(nn.Module):
-    def __init__(self, vocab_size=21257, dim=300):
+    def __init__(self):
         super().__init__()
-        self.embedding = nn.Embedding(vocab_size, dim, padding_idx=0)
+        filter_num = 300
+        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
         self.embedding.weight.data.uniform_(-1, 1)
         self.windows = [3, 4, 5]
         self.dropout = 0.1
         self.convs = list()
         for window in self.windows:
-            self.convs.append(nn.Conv2d(1, dim, (window, 300)).cuda())
+            self.convs.append(nn.Conv2d(1, filter_num, (window, 300)).cuda())
         self.dropout = torch.nn.Dropout(p=self.dropout)
-        self.proj = nn.Linear(len(self.windows)*dim, 300)
+        self.proj = nn.Linear(len(self.windows)*filter_num, 300)
 
     def forward(self, x, x_lens):
         embeddings = self.embedding(x)
@@ -81,30 +82,18 @@ class CNN(nn.Module):
 
 @register('attention')
 class Attention(nn.Module):
-    def __init__(self, vocab_size=21257, dim=300):
+    def __init__(self):
         super(Attention, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, dim, padding_idx=0)
+        self.embedding = nn.Embedding(30522, 300, padding_idx=0)
         self.embedding.weight.requires_grad = True
         self.encoders = nn.ModuleList([OriAttention() for _ in range(1)])
-        self.sublayer = SublayerConnection(0.1, dim)
+        self.sublayer = SublayerConnection(0.1, 300)
 
     def forward(self, x, mask):
         x = self.embedding(x)
         for i, encoder in enumerate(self.encoders):
             x = self.sublayer(x, lambda x: encoder(x, mask))
         return x.masked_fill_(~mask, -float('inf')).max(dim=1)[0]
-
-
-@register('sum')
-class SUM(nn.Module):
-    def __init__(self, vocab_size=21257, dim=300):
-        super(SUM, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, dim, padding_idx=0)
-        self.embedding.weight.requires_grad = True
-
-    def forward(self, x, mask):
-        x = self.embedding(x)
-        return x.masked_fill_(~mask, 0).sum(dim=1)
 
 
 class OriAttention(nn.Module):
@@ -138,13 +127,14 @@ def l2norm(x):
 
 
 @register('pam')
-class PAMEncoder(nn.Module):
-    def __init__(self, vocab_size=21257, dim=300):
-        super(PAMEncoder, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, dim, padding_idx=0)
+class Pamela(nn.Module):
+    def __init__(self):
+        super(Pamela, self).__init__()
+        self.embedding = nn.Embedding(21257, 300, padding_idx=0)
         self.embedding.weight.requires_grad = True
-        self.encoders = nn.ModuleList([PAMformer() for _ in range(1)])
-        self.sublayer = SublayerConnection(0.1, dim)
+        self.encoders = nn.ModuleList([Pamelaformer() for _ in range(1)])
+        self.sublayer = SublayerConnection(0.1, 300)
+        #self.pos_attns = cal_fixed_pos_att(200, window_size=3)
         self.head = 1
 
     def forward(self, x, mask):
@@ -153,19 +143,24 @@ class PAMEncoder(nn.Module):
         shape = list(x.size())
         position = PositionalEncoding(shape[-1], shape[-2])
         pos_att = position(x)
+        # shape = list(x.size())
+        # position = PositionalAttCached(shape[-1], self.pos_attns, shape[-2])
+        # pos_att = position(x)
 
         for i, encoder in enumerate(self.encoders):
             x = self.sublayer(x, lambda x: encoder(x, mask, pos_att))
 
+        #x = x.masked_fill_(~mask, -float('inf')).max(dim=1)[0]
         x = x.masked_fill_(~mask, 0).sum(dim=1)
         return l2norm(x)
 
 
-class PAMformer(nn.Module):
-    def __init__(self, dim=300):
+class Pamelaformer(nn.Module):
+    def __init__(self):
         super().__init__()
         self.self_attention = SAM()
         self.pos_attention = PAM()
+        dim = 300
         self.projection = nn.Sequential(
             nn.Linear(dim, dim),
             nn.ReLU()
@@ -173,15 +168,18 @@ class PAMformer(nn.Module):
         self.dropout = nn.Dropout(p=0.1)
 
     def forward(self, x, mask, position):
+        #a = self.self_attention(x, mask)
         pos = self.pos_attention(x, mask, position)
-        self_att = self.self_attention(pos, mask)
-        c = self.projection(self_att)
-        return self.dropout(c)
+        #self_att = self.self_attention(pos, mask)
+        #c = self.projection(torch.cat([a, b], dim=-1))
+        c = self.projection(pos)
+        return c
 
 
 class PAM(nn.Module):
-    def __init__(self, dim=300):
+    def __init__(self):
         super().__init__()
+        dim = 300
         self.head = 1
         self.projection = nn.Sequential(
             nn.Linear(dim, dim),
@@ -211,8 +209,9 @@ class PAM(nn.Module):
 
 
 class PAM2(nn.Module):
-    def __init__(self, dim=300):
+    def __init__(self):
         super().__init__()
+        dim = 300
         self.head = 1
         self.projection = nn.Sequential(
             nn.Linear(dim, dim),
@@ -230,16 +229,17 @@ class PAM2(nn.Module):
 
 
 class SAM(nn.Module):
-    def __init__(self, dim=300):
+    def __init__(self):
         super().__init__()
-        att_dim = 32
+        dim = 32
         self.head = 1
+        hidden_size = 300
         self.projectionq = nn.Sequential(
-            nn.Linear(dim, att_dim),
+            nn.Linear(hidden_size, dim),
             nn.ReLU()
         )
         self.projectionk = nn.Sequential(
-            nn.Linear(dim, att_dim),
+            nn.Linear(hidden_size, dim),
             nn.ReLU()
         )
         self.dropout = nn.Dropout(p=0.1)
