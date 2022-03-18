@@ -8,11 +8,11 @@ from torch.utils.data import DataLoader
 from utils import load_predict_dataset, TextData, collate_fn_predict
 
 
-def produce(args, model_path, model_type, tokenizer, batch_size=32, vocab_path='data/word_sim/all_vocab.txt'):
+def produce(args, model_path, tokenizer, batch_size=32, vocab_path='data/word_sim/all_vocab.txt'):
     dataset = load_predict_dataset(path=vocab_path)
     dataset = TextData(dataset)
-    train_iterator = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=lambda x: collate_fn_predict(x, tokenizer))
-    model = Producer[model_type](args)
+    train_iterator = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, collate_fn=lambda x: collate_fn_predict(x, tokenizer, args.input_type))
+    model = Producer[args.model_type](args)
     model.load_state_dict(torch.load(model_path))
     model.eval()
     model.cuda()
@@ -149,7 +149,7 @@ def overall(args, model_path, tokenizer):
     ]
 
     all_score = list()
-    embeddings = produce(args, model_path=model_path, model_type=args.model_type, tokenizer=tokenizer)
+    embeddings = produce(args, model_path=model_path, tokenizer=tokenizer)
     for data in data_list:
         score, drop_rate = cal_spear(data_file=data['file'], vectors=embeddings, index1=data['index1'],
                                      index2=data['index2'], target=data['target'], spear=data['spear'])

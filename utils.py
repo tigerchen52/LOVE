@@ -80,15 +80,14 @@ def collate_fn(batch_data, TOKENIZER, pad=0):
     return batch_words, batch_oririn_repre, batch_aug_repre_ids, x_lens
 
 
-def collate_fn_predict(batch_data, TOKENIZER, pad=0):
+def collate_fn_predict(batch_data, TOKENIZER, rtype='mixed', pad=0):
     batch_words, batch_oririn_repre = list(zip(*batch_data))
 
     batch_repre_ids = list()
     for word in batch_words:
-        repre, repre_id = repre_word(word, TOKENIZER, id_mapping=None, rtype='mixed')
+        repre, repre_id = repre_word(word, TOKENIZER, id_mapping=None, rtype=rtype)
         batch_repre_ids.append(repre_id)
 
-    x_lens = [len(x) for x in batch_repre_ids]
     max_len = max([len(seq) for seq in batch_repre_ids])
     batch_repre_ids = [char + [pad]*(max_len - len(char)) for char in batch_repre_ids]
     batch_repre_ids = torch.LongTensor(batch_repre_ids)

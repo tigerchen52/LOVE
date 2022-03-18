@@ -80,7 +80,6 @@ def main():
 
             # calculate loss
             loss = criterion(oririn_repre, aug_embeddings)
-
             # backward
             loss.backward()
             optimizer.step()
