@@ -20,7 +20,7 @@ You can find all details in our paper.
 
 
 ## The benefits of LOVE?
-### 1. Imputing vectors for unseen words
+### 1. Impute vectors for unseen words
 As we know, pre-trained embeddings like FastText use a fixed-size vocabulary, which means the performance decreases a lot when dealing with OOV words.
 
 LOVE can mimic the behavior of pre-trained language models (including BERT) and impute vectors for any words.
