@@ -20,7 +20,7 @@ You can find all details in our paper.
 
 
 ## The benefits of LOVE?
-### Imputing vectors for unseen words
+### 1. Imputing vectors for unseen words
 As we know, pre-trained embeddings like FastText use a fixed-size vocabulary, which means the performance decreases a lot when dealing with OOV words.
 
 LOVE can mimic the behavior of pre-trained language models (including BERT) and impute vectors for any words.
@@ -37,19 +37,23 @@ print(emb[oov_word][:10])
  -0.05266166  0.02355365 -0.02341797 -0.06452779]
 ```
 
+### 2. Make LMs robust with little cost
+LOVE can be used in a plug-and-play fashion with FastText and BERT, where it significantly improves their robustness.
+For example, LOVE with 6.5M can work with FastText (900+M) together and improve its robustness, as shown in the figure:
+![mimic_model](figure/sst2.png)
 
 
 
-## Environment setup
+## The usage of LOVE
 Clone the repository and set up the environment via "requirements.txt". Here we use python3.6. 
 ```
 pip install -r requirements.txt
 ```
-## Data preparation
+### Data preparation
 In our experiments, we use the FastText as target vectors [1]. [Downlaod](https://fasttext.cc/docs/en/english-vectors.html).
 After downloading, put the embedding file in the path `data/` 
 
-## Training
+### Training
 First you can use `-help` to show the arguments
 ```
 python train.py -help
@@ -60,7 +64,7 @@ We have also provided sample datasets, you can just run the mode without downloa
 python train.py -dataset data/wiki_100.vec
 ```
 
-## Evaulation
+### Evaulation
 To show the intrinsic results of our model, you can use the following command and 
 we have provided the trained model we used in our paper. 
 
