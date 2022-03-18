@@ -29,12 +29,12 @@ For example, _mispleling_ is a typo word, and LOVE can impute a reasonable vecto
 ```
 from produce_emb import produce
 
-oov_word = 'misspeling'
+oov_word = 'mispleling'
 emb = produce(oov_word)
 print(emb[oov_word][:10])
 
-## output [-0.03713581 -0.03796041 -0.11676338 -0.02594808  0.02002362 -0.04353317
- -0.05266166  0.02355365 -0.02341797 -0.06452779]
+## output [-0.0582502  -0.11268596 -0.12599416  0.09926333  0.02513208  0.01140639
+ -0.02326127 -0.007608    0.01973115  0.12448607]
 ```
 
 ### 2. Make LMs robust with little cost
