@@ -5,7 +5,7 @@ This is a Pytorch implementation of our paper.
 ## What is the LOVE Model?
 LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, is the name of our beautiful model given by [Fabian Suchanek](https://suchanek.name/).
 
-LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary like misspelled, rare words, domain-specific words..... 
+LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled, rare words, domain-specific words..... 
 
 Specifically, LOVE follows the principle of mimick-like models [2] to generate vectors for unseen words, by learning
 the behavior of pre-trained embeddings using only the surface form of words, as shown in the below figure.
