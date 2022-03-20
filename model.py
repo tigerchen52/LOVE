@@ -158,16 +158,20 @@ class Pamelaformer(nn.Module):
         self.self_attention = SAM(args)
         self.pos_attention = PAM(args)
         dim = args.emb_dim
+        proj_dim = args.emb_dim
+        self.merge = args.merge
+        if self.merge:
+            proj_dim = 2 * args.emb_dim
         self.projection = nn.Sequential(
-            nn.Linear(dim, dim),
+            nn.Linear(proj_dim, dim),
             nn.ReLU()
         )
         self.dropout = nn.Dropout(p=args.drop_rate)
 
-    def forward(self, x, mask, position, merge=False):
+    def forward(self, x, mask, position, merge=True):
         att = self.self_attention(x, mask)
         pos = self.pos_attention(x, mask, position)
-        if merge:
+        if self.merge:
             c = self.projection(torch.cat([att, pos], dim=-1))
         else:
             c = self.projection(pos)

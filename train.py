@@ -20,6 +20,7 @@ parser.add_argument('-shuffle', help='whether shuffle the samples', type=bool, d
 parser.add_argument('-lowercase', help='if only use lower case', type=bool, default=True)
 parser.add_argument('-model_type', help='sum, rnn, cnn, attention, pam', type=str, default='pam')
 parser.add_argument('-encoder_layer', help='the number of layer of the encoder', type=int, default=1)
+parser.add_argument('-merge', help='merge pam and attention layer', type=bool, default=True)
 parser.add_argument('-att_head_num', help='the number of attentional head for the pam encoder', type=int, default=1)
 parser.add_argument('-loader_type', help='simple, aug, hard', type=str, default='hard')
 parser.add_argument('-loss_type', help='mse, ntx, align_uniform', type=str, default='ntx')
