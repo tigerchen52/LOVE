@@ -2,7 +2,7 @@
 LOVE is accpeted by ACL22 main conference as a [long paper](https://arxiv.org/abs/2203.07860). 
 This is a Pytorch implementation of our paper. 
 
-## What is the LOVE model?
+## What is LOVE?
 LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, is the name of our beautiful model given by [Fabian Suchanek](https://suchanek.name/).
 
 LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled, rare words, domain-specific words..... 
