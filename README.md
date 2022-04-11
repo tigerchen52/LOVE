@@ -5,7 +5,7 @@ This is a Pytorch implementation of our paper.
 ## What is LOVE?
 LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, is the name of our beautiful model given by [Fabian Suchanek](https://suchanek.name/).
 
-LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled, rare words, domain-specific words..... 
+LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled words, rare words, domain-specific words..... 
 
 Specifically, LOVE follows the principle of mimick-like models [2] to generate vectors for unseen words, by learning
 the behavior of pre-trained embeddings using only the surface form of words, as shown in the below figure.
@@ -13,7 +13,7 @@ the behavior of pre-trained embeddings using only the surface form of words, as 
 ![mimic_model](figure/mimic.jpg)
 
 To our best knowledge, LOVE is the first one to use contrastive learning for word-level representations.
-The framework are shown in the below figure, and it uses various data augmentations to generate positive samples.
+The framework is shown in the below figure, and it uses various data augmentations to generate positive samples.
 Another distinction is that LOVE adopts a novel fully attention-based encoder named PAM to mimic the vectors from pre-trained embeddings.
 You can find all details in our paper.
 ![mimic_model](figure/clearning.png)
