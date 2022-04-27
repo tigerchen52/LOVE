@@ -72,6 +72,7 @@ we have provided the trained model we used in our paper.
 python evaluate.py
 
 ## expected output
+model parameters：~6.5M
 [RareWord]: [plugin], 42.6476207426462 
 [MEN  ]: [plugin], 68.47815031602434 
 [SimLex]: [plugin], 35.02258000865248 
