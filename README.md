@@ -50,8 +50,8 @@ Clone the repository and set up the environment via "requirements.txt". Here we 
 pip install -r requirements.txt
 ```
 ### Data preparation
-In our experiments, we use the FastText as target vectors [1]. [Downlaod](https://fasttext.cc/docs/en/english-vectors.html).
-After downloading, put the embedding file in the path `data/` 
+In our experiments, we use the FastText as target vectors [1]. [Download](https://fasttext.cc/docs/en/english-vectors.html).
+After downloading, put the embedding file in the path `data/`.
 
 ### Training
 First you can use `-help` to show the arguments
