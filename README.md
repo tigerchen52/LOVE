@@ -26,7 +26,7 @@ As we know, pre-trained embeddings like FastText use a fixed-size vocabulary, wh
 LOVE can mimic the behavior of pre-trained language models (including BERT) and impute vectors for any words.
 
 For example, _mispleling_ is a typo word, and LOVE can impute a reasonable vector for it:
-```
+```python
 from produce_emb import produce
 
 oov_word = 'mispleling'
