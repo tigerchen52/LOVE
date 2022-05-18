@@ -64,7 +64,7 @@ We have also provided sample datasets, you can just run the mode without downloa
 python train.py -dataset data/wiki_100.vec
 ```
 
-### Evaulation
+### Evaluation
 To show the intrinsic results of our model, you can use the following command and 
 we have provided the trained model we used in our paper. 
 
