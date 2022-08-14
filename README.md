@@ -65,6 +65,8 @@ python train.py -dataset data/wiki_100.vec
 ```
 
 ### Evaluation
+
+#### Intrinsic
 To show the intrinsic results of our model, you can use the following command and 
 we have provided the trained model we used in our paper. 
 
@@ -81,6 +83,7 @@ model parameters：~6.5M
 [muturk]: [plugin], 63.77020916555088 
 ```
 
+#### Etrinsic
 
 ## Reference
 [1] Bojanowski, Piotr, et al. "Enriching word vectors with subword information." Transactions of the Association for Computational Linguistics 5 (2017): 135-146.
