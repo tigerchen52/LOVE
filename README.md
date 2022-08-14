@@ -46,7 +46,7 @@ For example, LOVE with 6.5M can work with FastText (900+M) together and improve 
 
 ## The usage of LOVE
 Clone the repository and set up the environment via "requirements.txt". Here we use python3.6. 
-```
+```python
 pip install -r requirements.txt
 ```
 ### Data preparation
@@ -55,12 +55,12 @@ After downloading, put the embedding file in the path `data/`.
 
 ### Training
 First you can use `-help` to show the arguments
-```
+```python
 python train.py -help
 ```
 Once completing the data preparation and environment setup, we can train the model via `train.py`.
 We have also provided sample datasets, you can just run the mode without downloading.
-```
+```python
 python train.py -dataset data/wiki_100.vec
 ```
 
@@ -70,7 +70,7 @@ python train.py -dataset data/wiki_100.vec
 To show the intrinsic results of our model, you can use the following command and 
 we have provided the trained model we used in our paper. 
 
-```
+```python
 python evaluate.py
 
 ## expected output
@@ -83,7 +83,36 @@ model parameters：~6.5M
 [muturk]: [plugin], 63.77020916555088 
 ```
 
-#### Etrinsic
+#### Extrinsic
+
+Here, SST2 (Text Classification) and CoNLL03 (Named Entity Recognition) are used for extrinsic evaluations.
+As LOVE can mimic the behaviors of dynamic (BERT) and static (Fasttext) embeddings, we show four different types of evaluations:
+1. **CNN Text Classification**. Encoder: CNN; Embedding: LOVE-FastText; Code: [#]()
+2. **RNN NER**. Encoder: Bi-LSTM+CRF; Embedding: LOVE-FastText; Code: [rnn ner](https://github.com/tigerchen52/LOVE/tree/master/extrinsic/rnn_ner)
+3. **BERT Text Classification**. Encoder: BERT-uncased; Embedding: LOVE-BERT; Code: [undo]()
+4. **BERT NER**. Encoder: BERT-cased; Embedding: LOVE-BERT; Code: [undo]()
+
+
+**1. RNN NER**
+
+First, to generate embeddings for all words in CoNLL03
+```python
+from produce_emb import gen_embeddings_for_vocab
+vocab_path = "extrinsic/rnn_ner/output/words.txt"
+emb_path = "extrinsic/rnn_ner/output/love.emb"
+gen_embeddings_for_vocab(vocab_path=vocab_path, emb_path=emb_path)
+```
+Then, to train a Bi-LSTM-CRF model based on the embeddings obtained by LOVE
+Go to the folder ```extrinsic/rnn_ner``` and run the script:
+```
+cd extrinsic/rnn_ner
+python main.py
+```
+After around 30min, you can see score like this:
+```
+accuracy:  95.35%; precision:  83.83%; recall:  76.03%; FB1:  79.74
+test acc on test set: 79.74
+```
 
 ## Reference
 [1] Bojanowski, Piotr, et al. "Enriching word vectors with subword information." Transactions of the Association for Computational Linguistics 5 (2017): 135-146.
