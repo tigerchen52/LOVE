@@ -68,8 +68,8 @@ python train.py -dataset data/wiki_100.vec
 Currently, we provided two versions of LOVE. After downloading the model file, move it to this path```output/``` and modify the corresponding path for loading pre-trained parameters.
 |  Model   | Target  | Dimension | Download |
 |  ----  | ----  |  ----  | ----  |
-| love_fasttext  | [Fasttext]() |300|[link](https://www.dropbox.com/s/o63h61kj3mdi4o0/love_fasttext.zip?dl=1)|
-| love_bert_base_uncased  | [BERT-base-uncased]() |768|[link](https://www.dropbox.com/s/uvqrwpjw2n4pcyv/love_bert_base_uncased.zip?dl=1)|
+| love_fasttext  | [Fasttext](https://fasttext.cc/docs/en/english-vectors.html) |300|[link](https://www.dropbox.com/s/o63h61kj3mdi4o0/love_fasttext.zip?dl=1)|
+| love_bert_base_uncased  | [BERT-base-uncased](https://huggingface.co/bert-base-uncased) |768|[link](https://www.dropbox.com/s/uvqrwpjw2n4pcyv/love_bert_base_uncased.zip?dl=1)|
 
 #### Intrinsic
 To show the intrinsic results of our model, you can use the following command and 
@@ -92,8 +92,8 @@ model parameters：~6.5M
 
 Here, SST2 (Text Classification) and CoNLL03 (Named Entity Recognition) are used for extrinsic evaluations.
 As LOVE can mimic the behaviors of dynamic (BERT) and static (Fasttext) embeddings, we show four different types of evaluations:
-1. **CNN Text Classification**. Encoder: CNN; Embedding: LOVE-FastText; Code: [#]()
-2. **RNN NER**. Encoder: Bi-LSTM+CRF; Embedding: LOVE-FastText; Code: [rnn ner](https://github.com/tigerchen52/LOVE/tree/master/extrinsic/rnn_ner)
+1. **CNN Text Classification**. Encoder: CNN; Embedding: LOVE-FastText; Code: [cnn_text_classification](https://github.com/tigerchen52/LOVE/tree/master/extrinsic/cnn_text_classification); LOVE Model: love_fasttext
+2. **RNN NER**. Encoder: Bi-LSTM+CRF; Embedding: LOVE-FastText; Code: [rnn ner](https://github.com/tigerchen52/LOVE/tree/master/extrinsic/rnn_ner); LOVE Model: love_fasttext
 3. **BERT Text Classification**. Encoder: BERT-uncased; Embedding: LOVE-BERT; Code: [undo]()
 4. **BERT NER**. Encoder: BERT-cased; Embedding: LOVE-BERT; Code: [undo]()
 
