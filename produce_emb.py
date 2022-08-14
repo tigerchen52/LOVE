@@ -59,7 +59,9 @@ def gen_embeddings_for_vocab(vocab_path, emb_path, batch_size=32):
 if __name__ == '__main__':
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    # gen_embeddings_for_vocab(vocab_path='extrinsic/rnn_ner/output/words.txt', emb_path='extrinsic/rnn_ner/output/love.emb')
+    #gen_embeddings_for_vocab(vocab_path='extrinsic/rnn_ner/output/words.txt', emb_path='extrinsic/rnn_ner/output/love.emb')
+    # gen_embeddings_for_vocab(vocab_path='extrinsic/cnn_text_classification/output/words.txt',
+    #                          emb_path='extrinsic/cnn_text_classification/output/love.emb')
     emb = produce('mispelling')
     print(emb)
 

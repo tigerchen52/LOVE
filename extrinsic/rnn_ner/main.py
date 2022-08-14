@@ -1,6 +1,6 @@
-# Source codes are slightly modified from
+# reference repo
 # https://github.com/cswangjiawei/pytorch-NER
-# Thanks for the author @cswangjiawei
+# https://github.com/jiesutd/NCRFpp
 
 import random
 import torch
