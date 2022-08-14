@@ -108,11 +108,64 @@ Go to the folder ```extrinsic/rnn_ner``` and run the script:
 cd extrinsic/rnn_ner
 python main.py
 ```
-After around 30min, you can see score like this:
+After, you can see score like this:
 ```
 accuracy:  95.35%; precision:  83.83%; recall:  76.03%; FB1:  79.74
 test acc on test set: 79.74
 ```
+
+**2. CNN Text Classification**
+
+Likewise, to generate embeddings for all words in SST2
+```python
+from produce_emb import gen_embeddings_for_vocab
+vocab_path = "extrinsic/cnn_text_classification/output/words.txt"
+emb_path = "extrinsic/cnn_text_classification/output/love.emb"
+gen_embeddings_for_vocab(vocab_path=vocab_path, emb_path=emb_path)
+```
+Then, to train a CNN model based on the embeddings obtained by LOVE
+Go to the folder ```extrinsic/cnn_text_classification``` and run the script:
+```
+cd extrinsic/cnn_text_classification
+python main.py
+```
+After, you can see score like this:
+```
+epoch = 10
+Epoch: 01 | Epoch Time: 0m 10s
+	Train Loss: 0.652 | Train Acc: 62.18%
+	 Val. Loss: 0.579 |  Val. Acc: 72.52%
+Epoch: 02 | Epoch Time: 0m 15s
+	Train Loss: 0.538 | Train Acc: 73.29%
+	 Val. Loss: 0.514 |  Val. Acc: 75.57%
+Epoch: 03 | Epoch Time: 0m 20s
+	Train Loss: 0.455 | Train Acc: 79.44%
+	 Val. Loss: 0.491 |  Val. Acc: 76.93%
+Epoch: 04 | Epoch Time: 0m 11s
+	Train Loss: 0.405 | Train Acc: 82.32%
+	 Val. Loss: 0.477 |  Val. Acc: 77.85%
+Epoch: 05 | Epoch Time: 0m 7s
+	Train Loss: 0.359 | Train Acc: 85.15%
+	 Val. Loss: 0.497 |  Val. Acc: 76.01%
+Epoch: 06 | Epoch Time: 0m 10s
+	Train Loss: 0.326 | Train Acc: 87.19%
+	 Val. Loss: 0.492 |  Val. Acc: 75.95%
+Epoch: 07 | Epoch Time: 0m 24s
+	Train Loss: 0.282 | Train Acc: 89.47%
+	 Val. Loss: 0.519 |  Val. Acc: 74.95%
+Epoch: 08 | Epoch Time: 0m 15s
+	Train Loss: 0.242 | Train Acc: 91.56%
+	 Val. Loss: 0.461 |  Val. Acc: 79.26%
+Epoch: 09 | Epoch Time: 0m 7s
+	Train Loss: 0.215 | Train Acc: 93.04%
+	 Val. Loss: 0.460 |  Val. Acc: 79.60%
+Epoch: 10 | Epoch Time: 0m 11s
+	Train Loss: 0.184 | Train Acc: 94.32%
+	 Val. Loss: 0.501 |  Val. Acc: 77.20%
+	-------------------------------------------------------------
+	Test Loss: 0.422 | Test Acc: 80.42%
+```
+
 
 ## Reference
 [1] Bojanowski, Piotr, et al. "Enriching word vectors with subword information." Transactions of the Association for Computational Linguistics 5 (2017): 135-146.
