@@ -113,7 +113,7 @@ Go to the folder ```extrinsic/rnn_ner``` and run the script:
 cd extrinsic/rnn_ner
 python main.py
 ```
-After, you can see score like this:
+After, you can see scores like this:
 ```
 accuracy:  95.35%; precision:  83.83%; recall:  76.03%; FB1:  79.74
 test acc on test set: 79.74
@@ -134,7 +134,7 @@ Go to the folder ```extrinsic/cnn_text_classification``` and run the script:
 cd extrinsic/cnn_text_classification
 python main.py
 ```
-After, you can see score like this:
+After, you can see scores like this:
 ```
 epoch = 10
 Epoch: 01 | Epoch Time: 0m 10s
