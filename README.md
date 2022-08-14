@@ -65,6 +65,11 @@ python train.py -dataset data/wiki_100.vec
 ```
 
 ### Evaluation
+Currently, we provided two versions of LOVE. After downloading the model file, move it to this path```output/``` and modify the corresponding path for loading pre-trained parameters.
+|  Model   | Target  | Dimension | Download |
+|  ----  | ----  |  ----  | ----  |
+| love_fasttext  | [Fasttext]() |300|[link](https://www.dropbox.com/s/o63h61kj3mdi4o0/love_fasttext.zip?dl=1)|
+| love_bert_base_uncased  | [BERT-base-uncased]() |768|[link](https://www.dropbox.com/s/uvqrwpjw2n4pcyv/love_bert_base_uncased.zip?dl=1)|
 
 #### Intrinsic
 To show the intrinsic results of our model, you can use the following command and 
