@@ -4,6 +4,7 @@ This is a Pytorch implementation of our [paper](https://aclanthology.org/2022.ac
 ## What is LOVE?
 
 LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled words, rare words, domain-specific words..... 
+Meanwhile, LOVE can make language models (BERT, fasttext, etc) robust with very little cost, e.g., 6m additional parameters.
 
 Specifically, LOVE follows the principle of mimick-like models [2] to generate vectors for unseen words, by learning
 the behavior of pre-trained embeddings using only the surface form of words, as shown in the below figure.
