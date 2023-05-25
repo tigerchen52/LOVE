@@ -1,11 +1,9 @@
 # Imputing Out-of-Vocabulary Embeddings with LOVE Makes Language Models Robust with Little Cost
-LOVE is accpeted by ACL22 main conference as a [long paper (**oral**)](https://arxiv.org/abs/2203.07860). 
-This is a Pytorch implementation of our paper. 
+This is a Pytorch implementation of our [paper](https://aclanthology.org/2022.acl-long.245.pdf). 
 
 ## What is LOVE?
-LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, is the name of our beautiful model given by [Fabian Suchanek](https://suchanek.name/).
 
-LOVE can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled words, rare words, domain-specific words..... 
+LOVE, **L**earning **O**ut-of-**V**ocabulary **E**mbeddings, can produce word embeddings for arbitrary words, including out-of-vocabulary words like misspelled words, rare words, domain-specific words..... 
 
 Specifically, LOVE follows the principle of mimick-like models [2] to generate vectors for unseen words, by learning
 the behavior of pre-trained embeddings using only the surface form of words, as shown in the below figure.
@@ -170,6 +168,20 @@ Epoch: 10 | Epoch Time: 0m 11s
 	-------------------------------------------------------------
 	Test Loss: 0.422 | Test Acc: 80.42%
 ```
+
+
+## Citation
+```
+@inproceedings{chen2022imputing,
+  title={Imputing out-of-vocabulary embeddings with LOVE makes language models robust with little cost},
+  author={Chen, Lihu and Varoquaux, Ga{\"e}l and Suchanek, Fabian},
+  booktitle={ACL 2022-60th Annual Meeting of the Association for Computational Linguistics},
+  year={2022}
+}
+```
+
+## Acknowledgements
+*This work was partially funded by ANR-20-CHIA0012-01 (“NoRDF”).*
 
 
 ## Reference
