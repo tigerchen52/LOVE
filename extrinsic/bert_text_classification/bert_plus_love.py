@@ -13,15 +13,15 @@ from get_emb import load_all_embeddings, get_emb_for_text
 parser = argparse.ArgumentParser(description='BERT Text Classification')
 parser.add_argument('--word_embed_dim', type=int, default=768)
 parser.add_argument('--dropout', type=float, default=0.2)
-parser.add_argument('--love_embed_path', default='../data/love.emb')
+parser.add_argument('--love_embed_path', default='data/love.emb')
 parser.add_argument('--model_path', default='model.pt')
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--epochs', type=int, default=5)
 parser.add_argument('--max_len', type=int, default=50)
-parser.add_argument('--vocab_path', default='../data/vocab.txt')
-parser.add_argument('--train_path', default='../data/train.tsv')
-parser.add_argument('--dev_path', default='../data/dev.tsv')
-parser.add_argument('--test_path', default='../data/typo_test_{a}.txt')
+parser.add_argument('--vocab_path', default='data/vocab.txt')
+parser.add_argument('--train_path', default='data/train.tsv')
+parser.add_argument('--dev_path', default='data/dev.tsv')
+parser.add_argument('--test_path', default='data/typo_test_{a}.txt')
 parser.add_argument('--device', default='cuda:0')
 parser.add_argument('--use_love', type=bool, default=True)
 
@@ -145,7 +145,7 @@ def train(lr=2e-5):
     print('Tokenized Text: ', tokenizer.tokenize(train_data[2]))
     print('Token IDs     : ', tokenizer.convert_tokens_to_ids(tokenizer.tokenize(train_data[2])))
 
-    embeddings = load_all_embeddings(path='../data/love.emb', emb_size=emb_dim)
+    embeddings = load_all_embeddings(path=love_embed_path, emb_size=emb_dim)
 
     bert_input = bert_emb.weight.data.to('cpu').numpy()
     train_data, train_emb = encode_fn(train_data, embeddings, bert_input)
@@ -261,10 +261,11 @@ if __name__ == '__main__':
     epochs = args.epochs
     max_len = args.max_len
     emb_dim = args.word_embed_dim
+    love_embed_path = args.love_embed_path
     doc_files = [
-        '../data/train.tsv',
-        '../data/dev.tsv',
-        '../data/typo_test_{a}.txt',
+        args.train_path,
+        args.dev_path,
+        args.test_path,
     ]
     
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
