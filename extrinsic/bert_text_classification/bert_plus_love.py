@@ -23,6 +23,7 @@ parser.add_argument('--train_path', default='../data/train.tsv')
 parser.add_argument('--dev_path', default='../data/dev.tsv')
 parser.add_argument('--test_path', default='../data/typo_test_{a}.txt')
 parser.add_argument('--device', default='cuda:0')
+parser.add_argument('--use_love', type=bool, default=True)
 
 seed = 42
 random.seed(seed)
@@ -104,8 +105,8 @@ class TextClassification(BertPreTrainedModel):
             return_dict=None,
             extra_emb=None
     ):
-
-        emb = extra_emb
+        if use_love:emb = extra_emb
+        else:emb=inputs_embeds
 
         outputs  = self.bert(
             input_ids,
@@ -253,6 +254,7 @@ def run_sst2():
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    use_love = args.use_love
     device = torch.device(args.device)
     model_path = args.model_path
     batch_size = args.batch_size
